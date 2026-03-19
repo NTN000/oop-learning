@@ -1,28 +1,19 @@
     #THINK AND PYTHON, CHAPTER 1:
-    #Exercise 1.2: 
+    #Exercise 5.1:
 
-#1: How many seconds are there in 42 minutes and 42 seconds?
-minutes = 42
-seconds = 42
-total_seconds = (minutes * 60) + seconds
-print(total_seconds)
+import time
 
-#2: How many miles are there in 10 kilometers? Hint: there are 1.61 kilometers in a mile.
-kilometers = 10
-miles = kilometers / 1.61
-print(miles)
+# Lấy số giây kể từ epoch (1/1/1970)
+current_time = time.time()
 
-#3: If you run a 10 kilometer race in 42 minutes and 42 seconds, what is your average pace (time per mile)?
-race_distance_km = 10
-race_time_minutes = 42
-race_time_seconds = 42
+# Tính số ngày kể từ epoch
+days = int(current_time // 86400)   # 1 ngày = 86400 giây
 
-# Convert race time to seconds
-total_race_time = (race_time_minutes * 60) + race_time_seconds
+# Tính giờ, phút, giây trong ngày hiện tại
+seconds_today = int(current_time % 86400)
+hours = seconds_today // 3600
+minutes = (seconds_today % 3600) // 60
+seconds = seconds_today % 60
 
-# Convert race distance to miles
-race_distance_miles = race_distance_km / 1.61
-
-# Calculate average pace in seconds per mile
-average_pace = total_race_time / race_distance_miles
-print(average_pace)
+print("Ngày kể từ epoch:", days)
+print("Giờ hiện tại (GMT):", hours, ":", minutes, ":", seconds)
