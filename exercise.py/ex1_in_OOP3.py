@@ -32,7 +32,7 @@ B= SieuNhan("B" , "sung" , "xanh")
 print(B.ten, B.vu_khi, B.mau_sac)'''
 
 
-#1 Định nghĩa lớp siêu nhân
+'''#1 Định nghĩa lớp siêu nhân
 class SieuNhan:
     def __init__(self , ten, vu_khi, mau_sac):
         self.ten = ten
@@ -59,7 +59,7 @@ print (20*"-")
 print("\nDanh sách siêu nhân:")
 for sieu_nhan in danh_sach_sieu_nhan:
     print(f"Tên: {sieu_nhan.ten}, Vũ khí: {sieu_nhan.vu_khi}, Màu sắc: {sieu_nhan.mau_sac}")
-
+'''
 
         
     
