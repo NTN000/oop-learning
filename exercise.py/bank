@@ -1,4 +1,6 @@
 
+
+# cspell:disable
 #1. Đingh nghĩa lớp Tài khoản ngân hàng
 class TaiKhoan:
     def __init__(self, tenTK, soTK, NganHang, soDu):
