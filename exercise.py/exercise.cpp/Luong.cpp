@@ -22,7 +22,6 @@ class Nhanvien {
             this->luongCoBan=l;
             this->heSoLuong=hsl;
             this->maNhanVien=maNhanVien;
-            
         }
 /// Set and Get   
     string gettenNhanVien() const{return tenNhanVien; }
