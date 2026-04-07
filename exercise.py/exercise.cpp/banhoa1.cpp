@@ -12,7 +12,7 @@ protected:
 public:
     HangHoa(string m, string t, string nsx, double g): ma(m) ,ten(t), nhasx(nsx) , gia(g){}
     virtual ~HangHoa(){
-        cout<<"Dang gia phong bo nho cho: "<<ten<<endl;
+        cout<<"Dang giai phong bo nho cho Hang Hoa! "<<endl;
     }
     virtual void xuat(){
         cout<<"Thong tin chi tiet: \n";
