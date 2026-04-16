@@ -1,47 +1,43 @@
-#include<iostream>
-#include<vector>
-#include<iomanip>
-#include<string>
-#include<stdexcept> // Thư viện cho Exception
+#include <iostream>
+#include <vector>
+#include <iomanip>
+#include <string>
+#include <stdexcept>
 
 using namespace std;
 
 // =========================================================
-// 1. CUSTOM EXCEPTION (Ngoại lệ tự định nghĩa)
-// ==========================+===============================
+// 1. CUSTOM EXCEPTIONS
+// =========================================================
 class GiaKhongHopLe : public exception {
 public:
-    const char* what() const throw() {
-        return "Loi: Gia hang hoa phai >= 0!";
-    }
+    const char* what() const throw() { return "Loi: Gia hang hoa phai >= 0!"; }
 };
 
 class MaHangTrong : public exception {
 public:
-    const char* what() const throw() {
-        return "Loi: Ma hang hoa khong duoc de trong!";
-    }
+    const char* what() const throw() { return "Loi: Ma hang hoa khong duoc de trong!"; }
 };
 
 // =========================================================
-// 2. ABSTRACT CLASS (Lớp trừu tượng)
+// 2. ABSTRACT CLASS (Lớp cha trừu tượng)
 // =========================================================
 class HangHoa {
 protected:
     string ma, ten, nhasx;
     double gia;
 public:
-    // Constructor có Validation (Kiểm tra dữ liệu)
     HangHoa(string m, string t, string nsx, double g) {
         if (m.empty()) throw MaHangTrong();
         if (g < 0) throw GiaKhongHopLe();
         ma = m; ten = t; nhasx = nsx; gia = g;
     }
 
-    // Abstract method: Ép các lớp con phải tự định nghĩa loại hàng
     virtual string getLoaiHang() = 0; 
     
-    // Hàm xuất ảo
+    // Getter để lớp KhoHang có thể kiểm tra mã
+    string getMa() const { return ma; }
+
     virtual void xuat() {
         cout << left << setw(10) << ma << " | " 
              << setw(15) << ten << " | " 
@@ -49,7 +45,7 @@ public:
              << "Gia: " << fixed << setprecision(0) << gia;
     }
 
-    // OPERATOR OVERLOADING: So sánh hai hàng hóa dựa trên mã
+    // Nạp chồng toán tử == để so sánh đối tượng với một mã chuỗi
     bool operator==(const string& maTim) {
         return this->ma == maTim;
     }
@@ -58,7 +54,7 @@ public:
 };
 
 // =========================================================
-// 3. CÁC LỚP CON CỤ THỂ (Method Overriding)
+// 3. CÁC LỚP CON CỤ THỂ
 // =========================================================
 class HangDienMay : public HangHoa {
     string tg_baohanh;
@@ -90,35 +86,39 @@ public:
 };
 
 // =========================================================
-// 4. LỚP QUẢN LÝ (Kết hợp File I/O giả lập & Quản lý danh sách)
+// 4. LỚP QUẢN LÝ (Kho Hang)
 // =========================================================
 class KhoHang {
 private:
     vector<HangHoa*> danhSach;
 public:
-    void themHang(HangHoa* h) {
-        // Kiểm tra trùng mã (Dùng Operator Overloading == đã định nghĩa ở trên)
+    // Hàm mới: Kiểm tra xem mã đã tồn tại hay chưa
+    bool kiemTraTrungMa(string maMoi) {
         for (auto item : danhSach) {
-            if (*item == h->getLoaiHang()) { // Ví dụ logic kiểm tra
-                // Có thể thêm logic kiểm tra trùng mã thực sự ở đây
-            }
+            if (*item == maMoi) return true; // Sử dụng operator==
         }
+        return false;
+    }
+
+    void themHang(HangHoa* h) {
         danhSach.push_back(h);
     }
 
     void hienThi() {
         if (danhSach.empty()) {
-            cout << "Kho trong!\n";
+            cout << "=> Kho dang trong!\n";
             return;
         }
-        cout << "\n--- DANH SACH TRONG KHO ---\n";
+        cout << "\n" << setfill('=') << setw(65) << "" << setfill(' ') << endl;
+        cout << left << setw(10) << "Ma" << " | " << setw(15) << "Ten" << " | " 
+             << setw(12) << "Loai" << " | " << "Thong tin chi tiet" << endl;
+        cout << setfill('-') << setw(65) << "" << setfill(' ') << endl;
         for (auto h : danhSach) h->xuat();
+        cout << setfill('=') << setw(65) << "" << setfill(' ') << endl;
     }
 
-    // Destructor dọn dẹp bộ nhớ (Tương tự Context Manager)
     ~KhoHang() {
         for (auto h : danhSach) delete h;
-        cout << "\n[System] Da giai phong bo nho va luu du lieu.\n";
     }
 };
 
@@ -131,35 +131,57 @@ int main() {
 
     while (true) {
         try {
+            cout << "\n--- HE THONG QUAN LY KHO ---";
             cout << "\n1. Them Dien May | 2. Them Thuc Pham | 3. Xem Kho | 4. Thoat\n";
-            cout << "Lua chon: "; cin >> choice;
+            cout << "Lua chon: "; 
+            if (!(cin >> choice)) {
+                cin.clear();
+                cin.ignore(1000, '\n');
+                continue;
+            }
 
             if (choice == 4) break;
             if (choice == 3) { kho.hienThi(); continue; }
+            if (choice < 1 || choice > 4) continue;
 
-            string ma, ten, nsx; double gia;
-            cout << "Ma: "; cin >> ma;
-            cout << "Ten: "; cin.ignore(); getline(cin, ten);
-            cout << "NSX: "; getline(cin, nsx);
-            cout << "Gia: "; cin >> gia;
+            string ma;
+            // KIỂM TRA MÃ NGAY LẬP TỨC
+            while (true) {
+                cout << "Nhap ma hang: "; cin >> ma;
+                if (ma.empty()) {
+                    cout << "!!! Loi: Ma khong duoc de trong!\n";
+                } else if (kho.kiemTraTrungMa(ma)) {
+                    cout << "!!! Loi: Ma [" << ma << "] da ton tai. Vui long nhap ma khac!\n";
+                } else {
+                    break; // Mã hợp lệ, thoát vòng lặp nhập mã
+                }
+            }
+
+            string ten, nsx; double gia;
+            cout << "Ten hang: "; cin.ignore(); getline(cin, ten);
+            cout << "Nha san xuat: "; getline(cin, nsx);
+            cout << "Gia ban: "; cin >> gia;
 
             if (choice == 1) {
                 string tgbh; double dp;
-                cout << "TG bao hanh: "; cin >> tgbh;
-                cout << "Dien ap: "; cin >> dp;
+                cout << "Thoi gian bao hanh: "; cin >> tgbh;
+                cout << "Dien ap (V): "; cin >> dp;
                 kho.themHang(new HangDienMay(ma, ten, nsx, gia, tgbh, dp));
             } else if (choice == 2) {
                 string nhh;
-                cout << "Ngay het han: "; cin >> nhh;
+                cout << "Ngay het han (dd/mm/yyyy): "; cin >> nhh;
                 kho.themHang(new HangThucPham(ma, ten, nsx, gia, nhh));
             }
-            cout << "=> Them thanh cong!\n";
+
+            cout << "\n=> [THANH CONG] Da them hang hoa vao kho.\n";
 
         } catch (const exception& e) {
-            // Hứng tất cả các lỗi (Giá âm, Mã trống...)
             cout << "\n!!! ERROR: " << e.what() << endl;
+            cin.clear();
+            cin.ignore(1000, '\n');
         }
     }
 
+    cout << "\nCam on ban da su dung phan mem!";
     return 0;
 }
