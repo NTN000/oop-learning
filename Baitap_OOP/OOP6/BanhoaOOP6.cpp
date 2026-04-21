@@ -39,10 +39,7 @@ public:
     string getMa() const { return ma; }
 
     virtual void xuat() {
-        cout << left << setw(10) << ma << " | " 
-             << setw(15) << ten << " | " 
-             << setw(12) << getLoaiHang() << " | "
-             << "Gia: " << fixed << setprecision(0) << gia;
+        cout << ma << " | " << ten << " | " << getLoaiHang() << " | Gia: " << (long long)gia;
     }
 
     // Nạp chồng toán tử == để so sánh đối tượng với một mã chuỗi
@@ -109,12 +106,16 @@ public:
             cout << "=> Kho dang trong!\n";
             return;
         }
-        cout << "\n" << setfill('=') << setw(65) << "" << setfill(' ') << endl;
-        cout << left << setw(10) << "Ma" << " | " << setw(15) << "Ten" << " | " 
-             << setw(12) << "Loai" << " | " << "Thong tin chi tiet" << endl;
-        cout << setfill('-') << setw(65) << "" << setfill(' ') << endl;
-        for (auto h : danhSach) h->xuat();
-        cout << setfill('=') << setw(65) << "" << setfill(' ') << endl;
+     cout << "\n=======================================================\n";
+    cout << "Ma | Ten Hang | Loai Hang | Thong tin chi tiet\n";
+    cout << "-------------------------------------------------------\n";
+    
+    for (auto h : danhSach) {
+        h->xuat(); // Gọi hàm xuất đã đơn giản hóa ở trên
+    }
+    
+    cout << "=======================================================\n";
+
     }
 
     ~KhoHang() {
@@ -132,14 +133,17 @@ int main() {
     while (true) {
         try {
             cout << "\n--- HE THONG QUAN LY KHO ---";
-            cout << "\n1. Them Dien May | 2. Them Thuc Pham | 3. Xem Kho | 4. Thoat\n";
+            cout << "1. Them Dien May\n"; 
+            cout << "2. Them Thuc Pham\n"; 
+            cout << "3. Xem Kho\n"; 
+            cout << "4. Thoat\n";
             cout << "Lua chon: "; 
             if (!(cin >> choice)) {
                 cin.clear();
                 cin.ignore(1000, '\n');
                 continue;
             }
-
+ 
             if (choice == 4) break;
             if (choice == 3) { kho.hienThi(); continue; }
             if (choice < 1 || choice > 4) continue;
